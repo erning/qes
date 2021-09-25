@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Quadratic Equation Solver</title>
+  <link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.13.18/dist/katex.min.css" integrity="sha384-zTROYFVGOfTw7JV7KUu8udsvW2fx4lWOsCEDqhBreBwlHI4ioVRtmIvEThzJHGET" crossorigin="anonymous">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.13.18/dist/katex.min.js" integrity="sha384-GxNFqL3r9uRJQhR+47eDxuPoNE7yLftQM8LcxzgS4HT73tp970WS/wV5p8UzCOmb" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/vue-katex@0.5.0/dist/vue-katex.min.js"></script>
+  <script defer src="./qes.js"></script>
+  <script defer src="./index.js"></script>
+
+  <style>
+    body {
+      margin-left: auto;
+      margin-right: auto;
+    }
+    div.answer {
+      padding: 10px 0 10px 0;
+    }
+    input {
+      width: 10em;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <h3>Formula:</h3>
+    <div v-katex="'ax^2+bx+c=0'"></div>
+    <div v-katex="'x=\\frac{-b \\pm \\sqrt{b^2-4ac}}{2a}'"></div>
+    <form v-on:submit.prevent="calculate">
+      <p>
+        <label>a = </label><input v-model="paramA" type="text" placeholder="rational number"><br>
+        <label>b = </label><input v-model="paramB" type="text" placeholder="rational number"><br>
+        <label>c = </label><input v-model="paramC" type="text" placeholder="rational number"><br>
+      </p>
+      <p>
+        <mark v-if="message != ''">{{message}}</mark>
+      </p>
+      <p>
+        <button>Calculate</button>
+      </p>
+    </form>
+    <hr>
+    <h3>Equation:</h3>
+    <div v-if="question != ''" v-katex="question"></div>
+    <h3>Solution{{answer.length > 1 ? "s" : ""}}:</h3>
+    <div v-for="item of answer">
+      <div v-katex="item" class="answer"></div>
+    </div>
+  </div>
+</body>
+</html>
