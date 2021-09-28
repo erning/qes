@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>编程用公式法解一元二次方程</title>
+  <link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.13.18/dist/katex.min.css" integrity="sha384-zTROYFVGOfTw7JV7KUu8udsvW2fx4lWOsCEDqhBreBwlHI4ioVRtmIvEThzJHGET" crossorigin="anonymous">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.13.18/dist/katex.min.js" integrity="sha384-GxNFqL3r9uRJQhR+47eDxuPoNE7yLftQM8LcxzgS4HT73tp970WS/wV5p8UzCOmb" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.13.18/dist/contrib/auto-render.min.js" integrity="sha384-vZTG03m+2yp6N6BNi5iM4rW4oIwk5DfcNdFfxkk9ZWpDriOkXX8voJBFrAO7MpVl" crossorigin="anonymous"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        renderMathInElement(document.body, {
+          delimiters: [
+              {left: '$$', right: '$$', display: true},
+              {left: '$', right: '$', display: false},
+              {left: '\\(', right: '\\)', display: false},
+              {left: '\\[', right: '\\]', display: true}
+          ],
+          throwOnError: false
+        });
+    });
+</script>
+</head>
+<body>
+<h3>表示一元二次方程的数据结构</h3>
+<p>一元二次方程的标准形式为 $ax^2 + bx + c = 0$，当 $a$, $b$, $c$ 为有理数时，总是能将 $a$、$b$、$c$，转换为整数形式。我们只实现 $a$、$b$、$c$ 为有理数的情况。用一个结构体表示，</p>
+<pre><code>STRUCT {
+  a: DOUBLE
+  b: DOUBLE
+  c: DOUBLE
+}
+</code></pre>
+<h3>一元二次方程的简化</h3>
+<p>当一元二次方程的参数 $a$、$b$、$c$ 不为整数时，我们将方程两边同时乘以 10 的倍数，直到 $a$、$b$、$c$ 都为整数；</p>
+<p>当一元二次方程的参数 $a$、$b$、$c$ 不为互质数时，我们将方程两边同时除以 $a$, $b$, $c$ 的最大公约数；</p>
+<p>当一元二次方程的参数 $a$ 为负数时，我们将方程两边同时乘以 $-1$。</p>
+<p>由于我们使用标准形式来表示一元二次方程，方程右边始终为 $0$，乘除操作我们只需要对 $a$、$b$、$c$ 进行。</p>
+<h3>最大公约数</h3>
+<p>编程使用 <a href="https://zh.wikipedia.org/zh-cn/%E8%BC%BE%E8%BD%89%E7%9B%B8%E9%99%A4%E6%B3%95">輾轉相除法</a>，</p>
+<pre><code>function gcd(a, b)
+    while b ≠ 0
+        t ← b
+        b ← a mod b
+        a ← t
+    return a
+</code></pre>
+<h3>表示一元二次方程根的数据结构</h3>
+<p>根据一元二次方程的求根公式，$\dfrac{-b \pm \sqrt{b^2 - 4ac}}{2a}$，我们将根分解为 $A$、$B$、$C$、$D$ 四个部分： $\dfrac{A + B\sqrt{C}}{D}$。其中,</p>
+<ul>
+  <li>$A=-b$</li>
+  <li>$B=\pm 1$</li>
+  <li>$C=b^2 -4ac$</li>
+  <li>$D=2a$</li>
+</ul>
+<p>求解之前，我们先将一元二次方程的 $a$, $b$, $c$ 转化为整数形式。这样，$A$、$B$、$C$、$D$ 也都是整数。也可以用一个结构体表示根，</p>
+<pre><code>STRUCT {
+  a: INTEGER
+  b: INTEGER
+  c: INTEGER
+  d: INTEGER
+</code></pre>
+<h3>一元二次方程根的简化</h3>
+<p>对应式子 $\dfrac{A + B\sqrt{C}}{D}$，我们首先化简根号部分，即 $B\sqrt{C}$。</p>
+<ul>
+  <li>如果 $C = m^2 n \quad m, n \in \Z^+$，根号部分可以化简为 $B*m \sqrt{n}$</li>
+  <li>如果 $C = 0$，根号部分等于 $0$</li>
+  <li>如果 $C &#x3C; 0$，根号部分转化为 $B\sqrt{-C}i$</li>
+</ul>
+<p>然后，我们找出 $A$、$B$、$D$ 的最大公约数 $g$，在分式的分子与分母同时除以 $g$</p>
+<h3>分解质因数</h3>
+<p>对于 $B \sqrt{C} = B \sqrt{m^2n} = Bm\sqrt{n}$，为了找出 $m$ 和 $n$，可以对 $C$ 分解质因数，然后找出每个质因数的个数。设分解后某个质数 $p$，它的个数为 $q$，</p>
+<ul>
+  <li>当 $q$为偶数时，$p^q$ 可以完全提出根号，根号外为 $p^{\frac{q}{2}}$，根号内保留 $1$</li>
+  <li>当 $q$为奇数时，$p^{q-1}$，可以提出根号，根号外为 $p^{\frac{q-1}{2}}$，根号内保留 $p$</li>
+</ul>
+<p>编程做因式分解</p>
+<pre><code>function prime_factorize(number)
+    factors = {}
+    n ← abs(number)
+    i ← 2
+    while i &#x3C;= abs(number)
+        if (n % i == 0)
+            factors[i]++
+            n ← n / i
+        else
+            i ← i + 1
+    return factors
+</code></pre>
+<h3>格式化输出一元二次方程的解</h3>
+<p>可以选择用 <a href="https://zh.wikipedia.org/wiki/LaTeX">LaTeX</a> 格式输出，用浏览器展示比较简单，我们选用 <a href="https://katex.org/docs/supported.html">KaTeX</a> 实现。</p>
+<p><code>\dfrac{A + B \sqrt{C}}{D}</code> 渲染后为，$\dfrac{A + B\sqrt{C}}{D}$</p>
+<p>输出 LaTeX 时也要做一些化简工作，</p>
+<ul>
+  <li>当 $C = \pm 1$ 时，不用渲染根号</li>
+  <li>当 $C = 1$ 时，分子只渲染 $A + B$ 运算后的结果</li>
+  <li>当 $C &#x3C; 0$ 时，分子后面加上 $i$ 表示虚数</li>
+  <li>当 $B = 0$ 时，分子部分只渲染 $A$ 的值</li>
+  <li>当 $B &#x3C; 0$ 时，$B$ 之前的 $+$ 号 改为 $-$ 号，渲染 $|B|$ 的值</li>
+  <li>当 $A = 0$ 时，只渲染化简后的 $B \sqrt{C}$，且如果 $B >= 0$，不渲染 $B$ 之前的 $+$ 号</li>
+  <li>当 $D = 1$ 时，不用渲染分号及分母</li>
+</ul>
+<h3>Javascript</h3>
+<p>为了方便数学公式的显示，我们用浏览器来实现，因此采用 Javascript + <a href="https://vuejs.org">vue</a> 框架。</p>
+</body>
+</html>
